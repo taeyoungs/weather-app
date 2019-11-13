@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Loading from './Loading';
+import Weather from './Weather';
 import * as Location from 'expo-location';
 import * as Font from 'expo-font';
 import axios from 'axios';
@@ -15,9 +16,9 @@ export default class extends React.Component {
 
   getWeather = async (latitude, longitude) => {
     const { data } = await axios.get(
-      `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=${API_KEY}`,
+      `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=${API_KEY}&units=metric`,
     );
-    console.log(data);
+    this.setState({ isLoading: false, temp: data.main.temp });
   };
 
   getGeolocation = async () => {
@@ -26,9 +27,7 @@ export default class extends React.Component {
       const {
         coords: { latitude, longitude },
       } = await Location.getCurrentPositionAsync();
-      console.log(latitude, longitude);
       this.getWeather(latitude, longitude);
-      this.setState({ isLoading: false });
     } catch (error) {
       console.log(error);
     }
@@ -51,7 +50,13 @@ export default class extends React.Component {
     this.getGeolocation();
   }
   render() {
-    const { isLoading, fontLoaded } = this.state;
-    return fontLoaded ? isLoading ? <Loading /> : null : null;
+    const { isLoading, fontLoaded, temp } = this.state;
+    return fontLoaded ? (
+      isLoading ? (
+        <Loading />
+      ) : (
+        <Weather temp={Math.round(temp)} />
+      )
+    ) : null;
   }
 }
