@@ -12,3 +12,8 @@ web-report/
 
 # macOS
 .DS_Store
+
+.vscode
+.eslintrc.js
+.expo-shared
+.prettierrc
